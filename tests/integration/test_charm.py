@@ -2,7 +2,6 @@
 # Copyright 2023 Canonical Ltd.
 # See LICENSE file for licensing details.
 
-import asyncio
 import logging
 from pathlib import Path
 
@@ -25,8 +24,21 @@ async def test_build_and_deploy(ops_test: OpsTest):
     # Build and deploy charm from local source folder
     charm = await ops_test.build_charm(".")
 
+    await ops_test.model.add_machine(series="jammy")
+    machine_ids = await ops_test.model.get_machines()
+
     # Deploy the charm and wait for active/idle status
-    await asyncio.gather(
-        ops_test.model.deploy(charm, application_name=APP_NAME),
-        ops_test.model.wait_for_idle(apps=[APP_NAME], status="blocked", timeout=1000),
+    await ops_test.model.deploy(
+        "kafka",
+        channel="edge",
+        application_name="kafka",
+        num_units=1,
+        series="jammy",
+        to=machine_ids[0],
     )
+    ops_test.model.wait_for_idle(apps=["kafka"], status="blocked", idle_period=30, timeout=1000)
+
+    await ops_test.model.deploy(charm, application_name=APP_NAME, to=machine_ids[0])
+    ops_test.model.wait_for_idle(apps=[APP_NAME], idle_period=30, timeout=1000)
+
+    assert ops_test.model.applications[APP_NAME].status == "active"

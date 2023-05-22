@@ -1,0 +1,11 @@
+# This file populates the Overview on Charmhub.
+# See https://juju.is/docs/sdk/metadata-reference for a checklist and guidance.
+
+# The charm package name, no spaces (required)
+# See https://juju.is/docs/sdk/naming#heading--naming-charms for guidance.
+name: kafka-broker-rack-awareness
+
+display-name: Kafka Broker rack awareness
+
+summary: Setter for the broker.rack property.
+description: |

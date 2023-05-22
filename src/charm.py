@@ -15,9 +15,10 @@ https://discourse.charmhub.io/t/4208
 import logging
 import shutil
 
-import ops
 from charms.operator_libs_linux.v1 import snap
+from ops.charm import CharmBase
 from ops.framework import EventBase
+from ops.main import main
 from ops.model import ActiveStatus, BlockedStatus
 from utils import safe_write_to_file
 
@@ -25,7 +26,7 @@ from utils import safe_write_to_file
 logger = logging.getLogger(__name__)
 
 
-class KafkaBrokerRackAwarenessCharm(ops.CharmBase):
+class KafkaBrokerRackAwarenessCharm(CharmBase):
     """Charm the service."""
 
     def __init__(self, *args):
@@ -40,7 +41,9 @@ class KafkaBrokerRackAwarenessCharm(ops.CharmBase):
 
         # The charm should be deployed
         if not charmed_kafka.present:
-            self.unit.status = BlockedStatus("Charmed kafka snap missing.")
+            self.unit.status = BlockedStatus(
+                "Charmed Kafka missing in the unit. Please deploy the charm in machines along with Kafka"
+            )
             event.defer()
             return
 
@@ -51,11 +54,13 @@ class KafkaBrokerRackAwarenessCharm(ops.CharmBase):
         if not isinstance(self.unit.status, ActiveStatus):
             event.defer()
             return
-
-        rack_properties_file = "/var/snap/charmed-kafka/current/etc/kafka/rack.properties"
-        broker_rack = self.config["broker-rack"]
+        broker_rack = self.config.get("broker-rack")
+        if broker_rack is None:
+            self.unit.status = BlockedStatus("broker-rack config missing, please set a value") 
 
         content = f"broker.rack={broker_rack}"
+        rack_properties_file = "/var/snap/charmed-kafka/current/etc/kafka/rack.properties"
+
         safe_write_to_file(content=content, path=rack_properties_file)
 
         # Normalize file to have same owner as kafka charm files
@@ -63,4 +68,4 @@ class KafkaBrokerRackAwarenessCharm(ops.CharmBase):
 
 
 if __name__ == "__main__":  # pragma: nocover
-    ops.main(KafkaBrokerRackAwarenessCharm)
+    main(KafkaBrokerRackAwarenessCharm)

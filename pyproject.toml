@@ -9,6 +9,53 @@ show_missing = true
 minversion = "6.0"
 log_cli_level = "INFO"
 
+[tool.poetry]
+name = "kafka-operator"
+version = "1.0"
+description = "kafka-operator"
+authors = [""]
+
+[tool.poetry.dependencies]
+python = ">=3.8"
+ops = ">=2.0.0"
+pydantic =">=1.10"
+
+[tool.poetry.group.fmt]
+optional = true
+
+[tool.poetry.group.fmt.dependencies]
+black = "^22.3.0"
+ruff = ">=0.0.157"
+pyright = "^1.1.300"
+
+[tool.poetry.group.lint]
+optional = true
+
+[tool.poetry.group.lint.dependencies]
+black = "^22.3.0"
+ruff = ">=0.0.157"
+codespell = ">=2.2.2"
+pyright = "^1.1.301"
+
+[tool.poetry.group.unit]
+optional = true
+
+[tool.poetry.group.unit.dependencies]
+pytest = ">=7.2"
+coverage = {extras = ["toml"], version = ">7.0"}
+
+[tool.poetry.group.integration]
+optional = true
+
+[tool.poetry.group.integration.dependencies]
+pytest = ">=7.2"
+juju = "<3.1"  # The latest python-libjuju that supports both juju 2.9 and 3.0
+coverage = {extras = ["toml"], version = ">7.0"}
+pytest-operator = ">0.20"
+
+[tool.poetry.group.format.dependencies]
+pyright = "^1.1.301"
+
 # Formatting tools configuration
 [tool.black]
 line-length = 99
@@ -38,5 +85,13 @@ per-file-ignores = {"tests/*" = ["D100","D101","D102","D103","D104"]}
 [tool.ruff.mccabe]
 max-complexity = 10
 
-[tool.codespell]
-skip = "build,lib,venv,icon.svg,.tox,.git,.mypy_cache,.ruff_cache,.coverage"
+[tool.pyright]
+include = ["src"]
+extraPaths = ["./lib"]
+pythonVersion = "3.10"
+pythonPlatform = "All"
+typeCheckingMode = "basic"
+reportIncompatibleMethodOverride = false
+reportImportCycles = false
+reportMissingModuleSource = true
+stubPath = ""

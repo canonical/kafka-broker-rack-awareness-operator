@@ -20,7 +20,7 @@ Using `juju status`, get the number of the machine that was just created. If the
 
 ```shell
 $ juju deploy kafka --channel edge --to=0
-$ juju deploy kafka-broker-rack-awareness --channel edge --to=0 --config 
+$ juju deploy kafka-broker-rack-awareness --channel edge --to=0
 ```
 
 Lastly, use `config` to set the `broker.rack` value:

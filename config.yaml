@@ -8,6 +8,4 @@ options:
   broker-rack:
     description: |
       Sets the rack id for the broker. 
-
-    default: ""
     type: string

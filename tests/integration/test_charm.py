@@ -38,7 +38,9 @@ async def test_build_and_deploy(ops_test: OpsTest):
     )
     ops_test.model.wait_for_idle(apps=["kafka"], status="blocked", idle_period=30, timeout=1000)
 
-    await ops_test.model.deploy(charm, application_name=APP_NAME, to=machine_ids[0])
+    await ops_test.model.deploy(
+        charm, application_name=APP_NAME, series="jammy", to=machine_ids[0]
+    )
     ops_test.model.wait_for_idle(apps=[APP_NAME], idle_period=30, timeout=1000)
 
     assert ops_test.model.applications[APP_NAME].status == "active"

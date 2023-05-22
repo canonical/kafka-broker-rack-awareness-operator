@@ -56,7 +56,9 @@ class KafkaBrokerRackAwarenessCharm(CharmBase):
             return
         broker_rack = self.config.get("broker-rack")
         if broker_rack is None:
-            self.unit.status = BlockedStatus("broker-rack config missing, please set a value") 
+            self.unit.status = BlockedStatus("broker-rack config missing, please set a value")
+        else:
+            self.unit.status = ActiveStatus()
 
         content = f"broker.rack={broker_rack}"
         rack_properties_file = "/var/snap/charmed-kafka/current/etc/kafka/rack.properties"

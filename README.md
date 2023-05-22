@@ -30,6 +30,17 @@ $ juju config kafka-broker-rack-awareness broker-rack="my-value"
 
 To watch the process, `juju status` can be used.
 
+
+To specify different rack values, more than one rack awareness operator can be deployed. For example, if we have two brokers on a different zone each:
+
+```shell
+$ juju deploy kafka-broker-rack-awareness zone-one --channel edge --to=0  # machine of the first broker
+$ juju deploy kafka-broker-rack-awareness zone-two --channel edge --to=1  # machine of the second broker
+
+$ juju config zone-one broker-rack="zone-one"
+$ juju config zone-two broker-rack="zone-two"
+```
+
 ## Other resources
 
 - [Contributing](CONTRIBUTING.md) <!-- or link to other contribution documentation -->

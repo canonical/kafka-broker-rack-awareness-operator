@@ -67,7 +67,7 @@ class KafkaBrokerRackAwarenessCharm(CharmBase):
             return BlockedStatus(
                 "Charmed Kafka missing in the unit. Please deploy the charm in machines along with Kafka"
             )
-        if self.config.get("broker-rack") is None:
+        if not self.config.get("broker-rack"):
             return BlockedStatus("broker-rack config missing, please set a value")
 
         return ActiveStatus()

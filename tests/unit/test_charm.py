@@ -10,7 +10,7 @@ from unittest.mock import PropertyMock, patch
 import pytest
 import yaml
 from charm import KafkaBrokerRackAwarenessCharm
-from ops.model import ActiveStatus, BlockedStatus
+from ops.model import BlockedStatus
 from ops.testing import Harness
 
 logger = logging.getLogger(__name__)

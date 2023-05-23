@@ -17,9 +17,8 @@ import shutil
 
 from charms.operator_libs_linux.v1 import snap
 from ops.charm import CharmBase
-from ops.framework import EventBase
 from ops.main import main
-from ops.model import ActiveStatus, BlockedStatus
+from ops.model import ActiveStatus, BlockedStatus, StatusBase
 from utils import safe_write_to_file
 
 # Log messages can be retrieved using juju debug-log
@@ -34,32 +33,26 @@ class KafkaBrokerRackAwarenessCharm(CharmBase):
         self.framework.observe(self.on.install, self._on_install)
         self.framework.observe(self.on.config_changed, self._on_config_changed)
 
-    def _on_install(self, event: EventBase):
-        """Handle on install event."""
+    @property
+    def kafka_installed(self) -> bool:
+        """Check if kafka snap is installed."""
         cache = snap.SnapCache()
         charmed_kafka = cache["charmed-kafka"]
 
-        # The charm should be deployed
-        if not charmed_kafka.present:
-            self.unit.status = BlockedStatus(
-                "Charmed Kafka missing in the unit. Please deploy the charm in machines along with Kafka"
-            )
-            event.defer()
-            return
+        return charmed_kafka.present
 
-        self.unit.status = ActiveStatus()
+    def _on_install(self, _):
+        """Handle on install event."""
+        self.unit.status = self._get_status()
 
     def _on_config_changed(self, event):
         """Handle config changed event."""
+        self.unit.status = self._get_status()
         if not isinstance(self.unit.status, ActiveStatus):
             event.defer()
             return
-        broker_rack = self.config.get("broker-rack")
-        if broker_rack is None:
-            self.unit.status = BlockedStatus("broker-rack config missing, please set a value")
-        else:
-            self.unit.status = ActiveStatus()
 
+        broker_rack = self.config.get("broker-rack")
         content = f"broker.rack={broker_rack}"
         rack_properties_file = "/var/snap/charmed-kafka/current/etc/kafka/rack.properties"
 
@@ -67,6 +60,17 @@ class KafkaBrokerRackAwarenessCharm(CharmBase):
 
         # Normalize file to have same owner as kafka charm files
         shutil.chown(rack_properties_file, user="snap_daemon", group="root")
+
+    def _get_status(self) -> StatusBase:
+        """Return the current application status."""
+        if not self.kafka_installed:
+            return BlockedStatus(
+                "Charmed Kafka missing in the unit. Please deploy the charm in machines along with Kafka"
+            )
+        if not self.config.get("broker-rack"):
+            return BlockedStatus("broker-rack config missing, please set a value")
+
+        return ActiveStatus()
 
 
 if __name__ == "__main__":  # pragma: nocover

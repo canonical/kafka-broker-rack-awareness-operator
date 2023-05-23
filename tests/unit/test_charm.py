@@ -10,7 +10,7 @@ from unittest.mock import PropertyMock, patch
 import pytest
 import yaml
 from charm import KafkaBrokerRackAwarenessCharm
-from ops.model import ActiveStatus, BlockedStatus
+from ops.model import BlockedStatus
 from ops.testing import Harness
 
 logger = logging.getLogger(__name__)
@@ -26,27 +26,38 @@ def harness():
 
 
 def test_install_with_kafka(harness: Harness):
-    with patch("charm.snap.Snap.present", new_callable=PropertyMock, return_value=True):
-        harness.charm.on.install.emit()
-
-    assert isinstance(harness.charm.unit.status, ActiveStatus)
-
-
-def test_install_without_kafka(harness: Harness):
-    with (
-        patch("charm.snap.Snap.present", new_callable=PropertyMock, return_value=False),
-        patch("ops.framework.EventBase.defer") as patched_defer,
+    with patch(
+        "charm.KafkaBrokerRackAwarenessCharm.kafka_installed",
+        new_callable=PropertyMock,
+        return_value=True,
     ):
         harness.charm.on.install.emit()
 
-        patched_defer.assert_called()
-        assert isinstance(harness.charm.unit.status, BlockedStatus)
+    assert harness.charm.unit.status == BlockedStatus(
+        "broker-rack config missing, please set a value"
+    )
+
+
+def test_install_without_kafka(harness: Harness):
+    with patch(
+        "charm.KafkaBrokerRackAwarenessCharm.kafka_installed",
+        new_callable=PropertyMock,
+        return_value=False,
+    ):
+        harness.charm.on.install.emit()
+
+    assert harness.charm.unit.status == BlockedStatus(
+        "Charmed Kafka missing in the unit. Please deploy the charm in machines along with Kafka"
+    )
 
 
 def test_config_changed_valid(harness: Harness):
-    # Install check succeeds and the unit is Active
-    harness.charm.unit.status = ActiveStatus()
     with (
+        patch(
+            "charm.KafkaBrokerRackAwarenessCharm.kafka_installed",
+            new_callable=PropertyMock,
+            return_value=True,
+        ),
         patch("charm.safe_write_to_file", return_value=None) as patched_write,
         patch("charm.shutil.chown", return_value=None) as patched_chown,
     ):

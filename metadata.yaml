@@ -6,6 +6,6 @@
 name: kafka-broker-rack-awareness
 
 display-name: Kafka Broker rack awareness
-
 summary: Setter for the broker.rack property.
 description: |
+docs: https://discourse.charmhub.io/t/kafka-broker-rack-awareness-docs-index/10870

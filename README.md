@@ -1,6 +1,10 @@
 # Kafka Broker rack awareness Operator
+[![Charmhub](https://charmhub.io/kafka-broker-rack-awareness/badge.svg)](https://charmhub.io/kafka-broker-rack-awareness)
+[![Release](https://github.com/canonical/kafka-broker-rack-awareness-operator/actions/workflows/release.yaml/badge.svg)](https://github.com/canonical/kafka-broker-rack-awareness-operator/actions/workflows/release.yaml)
+[![Tests](https://github.com/canonical/kafka-broker-rack-awareness-operator/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/canonical/kafka-broker-rack-awareness-operator/actions/workflows/ci.yaml)
 
 Charmhub package name: Kafka Broker rack awareness
+
 More information: https://charmhub.io/kafka-broker-rack-awareness
 
 ## Overview

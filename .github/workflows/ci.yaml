@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install tox
         # TODO: Consider replacing with custom image on self-hosted runner OR pinning version
         run: python3 -m pip install tox
@@ -33,7 +33,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install tox
         # TODO: Consider replacing with custom image on self-hosted runner OR pinning version
         run: python3 -m pip install tox
@@ -63,7 +63,7 @@ jobs:
     timeout-minutes: 120
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup operator environment
         # TODO: Replace with custom image on self-hosted runner
         uses: charmed-kubernetes/actions-operator@main
@@ -72,7 +72,7 @@ jobs:
           provider: lxd
           bootstrap-options: "--agent-version 2.9.42"
       - name: Download packed charm(s)
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build.outputs.artifact-name }}
       - name: Select tests

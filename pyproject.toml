@@ -10,15 +10,15 @@ minversion = "6.0"
 log_cli_level = "INFO"
 
 [tool.poetry]
-name = "kafka-operator"
-version = "1.0"
-description = "kafka-operator"
-authors = [""]
+name = "kafka-broker-rack-awareness-operator"
+package-mode = false
+requires-poetry = ">=2.0.0"
 
 [tool.poetry.dependencies]
 python = ">=3.8"
 ops = ">=2.0.0"
 pydantic =">=1.10"
+pyyaml = "^6.0.1"
 
 [tool.poetry.group.fmt]
 optional = true

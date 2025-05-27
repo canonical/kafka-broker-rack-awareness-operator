@@ -19,6 +19,7 @@ from charms.operator_libs_linux.v2 import snap
 from ops.charm import CharmBase
 from ops.main import main
 from ops.model import ActiveStatus, BlockedStatus, StatusBase
+
 from utils import safe_write_to_file
 
 # Log messages can be retrieved using juju debug-log

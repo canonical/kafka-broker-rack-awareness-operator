@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 METADATA = yaml.safe_load(Path("./metadata.yaml").read_text())
 APP_NAME = METADATA["name"]
+KAFKA_CHANNEL = "3/edge"
 
 
 @pytest.mark.abort_on_fail
@@ -24,23 +25,26 @@ async def test_build_and_deploy(ops_test: OpsTest):
     # Build and deploy charm from local source folder
     charm = await ops_test.build_charm(".")
 
-    await ops_test.model.add_machine(series="jammy")
-    machine_ids = await ops_test.model.get_machines()
-
-    # Deploy the charm and wait for active/idle status
+    # # Deploy the charm and wait for active/idle status
     await ops_test.model.deploy(
         "kafka",
-        channel="edge",
+        channel=KAFKA_CHANNEL,
         application_name="kafka",
         num_units=1,
         series="jammy",
-        to=machine_ids[0],
     )
-    ops_test.model.wait_for_idle(apps=["kafka"], status="blocked", idle_period=50, timeout=1000)
+    await ops_test.model.wait_for_idle(
+        apps=["kafka"], status="blocked", idle_period=50, timeout=1000
+    )
+    machine_ids = await ops_test.model.get_machines()
 
     await ops_test.model.deploy(
-        charm, application_name=APP_NAME, series="jammy", to=machine_ids[0]
+        charm,
+        application_name=APP_NAME,
+        series="jammy",
+        to=machine_ids[0],
+        config={"broker-rack": "integration-zone"},
     )
-    ops_test.model.wait_for_idle(apps=[APP_NAME], idle_period=50, timeout=1000)
+    await ops_test.model.wait_for_idle(apps=[APP_NAME], idle_period=50, timeout=1000)
 
     assert ops_test.model.applications[APP_NAME].status == "active"

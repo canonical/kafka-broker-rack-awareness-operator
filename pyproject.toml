@@ -15,9 +15,9 @@ package-mode = false
 requires-poetry = ">=2.0.0"
 
 [tool.poetry.dependencies]
-python = ">=3.8"
+python = ">=3.10,<4.0"
 ops = ">=2.0.0"
-pydantic =">=1.10"
+pydantic =">=1.10, <2"
 pyyaml = "^6.0.1"
 
 [tool.poetry.group.fmt]

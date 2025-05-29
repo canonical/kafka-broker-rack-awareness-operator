@@ -10,15 +10,15 @@ minversion = "6.0"
 log_cli_level = "INFO"
 
 [tool.poetry]
-name = "kafka-operator"
-version = "1.0"
-description = "kafka-operator"
-authors = [""]
+name = "kafka-broker-rack-awareness-operator"
+package-mode = false
+requires-poetry = ">=2.0.0"
 
 [tool.poetry.dependencies]
-python = ">=3.8"
+python = ">=3.10,<4.0"
 ops = ">=2.0.0"
-pydantic =">=1.10"
+pydantic =">=1.10, <2"
+pyyaml = "^6.0.1"
 
 [tool.poetry.group.fmt]
 optional = true
@@ -49,7 +49,7 @@ optional = true
 
 [tool.poetry.group.integration.dependencies]
 pytest = ">=7.2"
-juju = "<3.1"  # The latest python-libjuju that supports both juju 2.9 and 3.0
+juju = "^3.6"
 coverage = {extras = ["toml"], version = ">7.0"}
 pytest-operator = ">0.20"
 

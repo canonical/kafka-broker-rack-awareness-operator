@@ -1,4 +1,5 @@
-# Kafka Broker rack awareness Operator
+# Apache Kafka Broker Rack Awareness Operator
+
 [![Charmhub](https://charmhub.io/kafka-broker-rack-awareness/badge.svg)](https://charmhub.io/kafka-broker-rack-awareness)
 [![Release](https://github.com/canonical/kafka-broker-rack-awareness-operator/actions/workflows/release.yaml/badge.svg)](https://github.com/canonical/kafka-broker-rack-awareness-operator/actions/workflows/release.yaml)
 [![Tests](https://github.com/canonical/kafka-broker-rack-awareness-operator/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/canonical/kafka-broker-rack-awareness-operator/actions/workflows/ci.yaml)
@@ -16,6 +17,7 @@ This charm handles the configuration of the `broker.rack` setting for Kafka. It 
 ### Basic usage
 
 The rack awareness Operator needs to be deployed to the same machine as the Kafka operator. First create a machine:
+
 ```shell
 $ juju add-machine --series=jammy
 ```
@@ -28,12 +30,12 @@ $ juju deploy kafka-broker-rack-awareness --channel edge --to=0
 ```
 
 Lastly, use `config` to set the `broker.rack` value:
+
 ```shell
 $ juju config kafka-broker-rack-awareness broker-rack="my-value"
 ```
 
 To watch the process, `juju status` can be used.
-
 
 To specify different rack values, more than one rack awareness operator can be deployed. For example, if we have two brokers on a different zone each:
 
@@ -48,5 +50,4 @@ $ juju config zone-two broker-rack="zone-two"
 ## Other resources
 
 - [Contributing](CONTRIBUTING.md) <!-- or link to other contribution documentation -->
-
 - See the [Juju SDK documentation](https://juju.is/docs/sdk) for more information about developing and improving charms.

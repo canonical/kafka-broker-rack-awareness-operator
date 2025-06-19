@@ -24,8 +24,10 @@ def series(ubuntu_base):
 
 
 @pytest.fixture
-async def charm(ops_test: OpsTest, series):
+async def charm(ops_test: OpsTest, ubuntu_base):
     """Kafka charm used for integration testing."""
-    bases_index = 0 if series == "jammy" else 1
-    charm = await ops_test.build_charm(".", bases_index=bases_index)
-    return charm
+    charm_paths = await ops_test.build_charm(".", return_all=True)
+    for p in charm_paths:
+        if ubuntu_base in str(p):
+            return p
+    raise FileNotFoundError

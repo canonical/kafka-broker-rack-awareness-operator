@@ -49,12 +49,12 @@ jobs:
   integration-test:
     strategy:
       fail-fast: false
-    matrix:
-      include:
-        - base: 22.04
-          tox-environment: integration
-        - base: 24.04
-          tox-environment: integration
+      matrix:
+        include:
+          - base: 22.04
+            tox-environment: integration
+          - base: 24.04
+            tox-environment: integration
     name: Integration tests (${{ matrix.base }})
     needs:
       - lint

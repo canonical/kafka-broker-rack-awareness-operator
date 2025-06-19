@@ -13,7 +13,6 @@ logger = logging.getLogger(__name__)
 
 METADATA = yaml.safe_load(Path("./metadata.yaml").read_text())
 APP_NAME = METADATA["name"]
-KAFKA_CHANNEL = "3/edge"
 
 
 @pytest.mark.abort_on_fail
@@ -23,12 +22,16 @@ async def test_build_and_deploy(ops_test: OpsTest, series, charm):
     Assert on the unit status before any relations/configurations take place.
     """
     # Deploy the charm and wait for active/idle status
+    if series == "jammy":
+        kafka_channel = "3/edge"
+    elif series == "noble":
+        kafka_channel = "4/edge"
+
     await ops_test.model.deploy(
         "kafka",
-        channel=KAFKA_CHANNEL,
+        channel=kafka_channel,
         application_name="kafka",
         num_units=1,
-        series="jammy",
     )
     await ops_test.model.wait_for_idle(
         apps=["kafka"], status="blocked", idle_period=50, timeout=1000

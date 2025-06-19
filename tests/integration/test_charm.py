@@ -17,15 +17,12 @@ KAFKA_CHANNEL = "3/edge"
 
 
 @pytest.mark.abort_on_fail
-async def test_build_and_deploy(ops_test: OpsTest):
+async def test_build_and_deploy(ops_test: OpsTest, series, charm):
     """Build the charm-under-test and deploy it together with related charms.
 
     Assert on the unit status before any relations/configurations take place.
     """
-    # Build and deploy charm from local source folder
-    charm = await ops_test.build_charm(".")
-
-    # # Deploy the charm and wait for active/idle status
+    # Deploy the charm and wait for active/idle status
     await ops_test.model.deploy(
         "kafka",
         channel=KAFKA_CHANNEL,
@@ -41,7 +38,7 @@ async def test_build_and_deploy(ops_test: OpsTest):
     await ops_test.model.deploy(
         charm,
         application_name=APP_NAME,
-        series="jammy",
+        series=series,
         to=machine_ids[0],
         config={"broker-rack": "integration-zone"},
     )

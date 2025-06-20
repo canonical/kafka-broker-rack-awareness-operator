@@ -46,9 +46,13 @@ class KafkaBrokerRackAwarenessCharm(CharmBase):
     def kafka_snap_username(self) -> str:
         """Return the username for the Kafka snap."""
         user = "snap_daemon"
-        if platform.freedesktop_os_release()["VERSION_ID"] == "24.04":
+        base = platform.freedesktop_os_release()["VERSION_ID"]
+        if base == "22.04":
+            user = "snap_daemon"
+        elif base == "24.04":
             user = "_daemon_"
 
+        print(f"\n\n User: {user}\n\n")
         return user
 
     def _on_install(self, _):

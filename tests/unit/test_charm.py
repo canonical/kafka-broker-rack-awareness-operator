@@ -52,7 +52,14 @@ def test_install_without_kafka(harness: Harness):
     )
 
 
-def test_config_changed_valid(harness: Harness):
+@pytest.mark.parametrize(
+    "version_id, expected_user",
+    [
+        ("22.04", "snap_daemon"),
+        ("24.04", "_daemon_"),
+    ],
+)
+def test_config_changed_valid(harness: Harness, version_id, expected_user):
     with (
         patch(
             "charm.KafkaBrokerRackAwarenessCharm.kafka_installed",
@@ -61,6 +68,7 @@ def test_config_changed_valid(harness: Harness):
         ),
         patch("charm.safe_write_to_file", return_value=None) as patched_write,
         patch("charm.shutil.chown", return_value=None) as patched_chown,
+        patch("charm.platform.freedesktop_os_release", return_value={"VERSION_ID": version_id}),
     ):
         harness.update_config(key_values={"broker-rack": "us-west"})
 
@@ -70,7 +78,7 @@ def test_config_changed_valid(harness: Harness):
         )
         patched_chown.assert_called_with(
             "/var/snap/charmed-kafka/current/etc/kafka/rack.properties",
-            user="snap_daemon",
+            user=expected_user,
             group="root",
         )
 

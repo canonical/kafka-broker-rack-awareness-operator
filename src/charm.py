@@ -4,15 +4,10 @@
 #
 # Learn more at: https://juju.is/docs/sdk
 
-"""Charm the service.
-
-Refer to the following post for a quick-start guide that will help you
-develop a new k8s charm using the Operator Framework:
-
-https://discourse.charmhub.io/t/4208
-"""
+"""Charmed Machine Operator for Rack Awareness in Kafka Broker."""
 
 import logging
+import platform
 import shutil
 
 from charms.operator_libs_linux.v2 import snap
@@ -27,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class KafkaBrokerRackAwarenessCharm(CharmBase):
-    """Charm the service."""
+    """Charmed Rack Awareness for Kafka Broker."""
 
     def __init__(self, *args):
         super().__init__(*args)
@@ -42,6 +37,19 @@ class KafkaBrokerRackAwarenessCharm(CharmBase):
 
         return charmed_kafka.present
 
+    @property
+    def rack_properties_file(self) -> str:
+        """Return the path to the rack properties file."""
+        return "/var/snap/charmed-kafka/current/etc/kafka/rack.properties"
+
+    @property
+    def kafka_snap_username(self) -> str:
+        """Return the username for the Kafka snap."""
+        base = platform.freedesktop_os_release()["VERSION_ID"]
+        if base == "24.04":
+            return "_daemon_"
+        return "snap_daemon"
+
     def _on_install(self, _):
         """Handle on install event."""
         self.unit.status = self._get_status()
@@ -55,12 +63,11 @@ class KafkaBrokerRackAwarenessCharm(CharmBase):
 
         broker_rack = self.config.get("broker-rack")
         content = f"broker.rack={broker_rack}"
-        rack_properties_file = "/var/snap/charmed-kafka/current/etc/kafka/rack.properties"
 
-        safe_write_to_file(content=content, path=rack_properties_file)
+        safe_write_to_file(content=content, path=self.rack_properties_file)
 
         # Normalize file to have same owner as kafka charm files
-        shutil.chown(rack_properties_file, user="snap_daemon", group="root")
+        shutil.chown(self.rack_properties_file, user=self.kafka_snap_username, group="root")
 
     def _get_status(self) -> StatusBase:
         """Return the current application status."""

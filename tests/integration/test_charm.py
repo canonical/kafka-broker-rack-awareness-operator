@@ -38,6 +38,7 @@ async def test_build_and_deploy(ops_test: OpsTest, series, charm):
     )
     machine_ids = await ops_test.model.get_machines()
 
+    logger.info(f"Using charm built for {series} series: {charm}")
     await ops_test.model.deploy(
         charm,
         application_name=APP_NAME,

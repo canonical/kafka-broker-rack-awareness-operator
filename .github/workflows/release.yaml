@@ -27,23 +27,16 @@ jobs:
     needs:
       - lib-check
     uses: ./.github/workflows/ci.yaml
-
-  build:
-    name: Build charm
-    uses: canonical/data-platform-workflows/.github/workflows/build_charm.yaml@v29.0.0
-    with:
-      cache: false  # TODO: fix after being added to ccc
+    secrets: inherit
 
   release:
     name: Release to Charmhub
     needs:
-      - lib-check
       - ci-tests
-      - build
-    uses: canonical/data-platform-workflows/.github/workflows/release_charm.yaml@v2
+    uses: canonical/data-platform-workflows/.github/workflows/release_charm.yaml@v29.0.0
     with:
       channel: latest/edge
-      artifact-prefix: ${{ needs.build.outputs.artifact-prefix }}
+      artifact-prefix: ${{ needs.ci-tests.outputs.artifact-prefix }}
     secrets:
       charmhub-token: ${{ secrets.CHARMHUB_TOKEN }}
     permissions:

@@ -1,6 +1,7 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
 import os
+import platform
 
 import pytest
 from pytest_operator.plugin import OpsTest
@@ -31,3 +32,13 @@ async def charm(ops_test: OpsTest, ubuntu_base):
         if ubuntu_base in str(p):
             return p
     raise FileNotFoundError
+
+
+@pytest.fixture(scope="module")
+def arch() -> str:
+    """Fixture to provide the platform architecture for testing."""
+    platforms = {
+        "x86_64": "amd64",
+        "aarch64": "arm64",
+    }
+    return platforms.get(platform.machine(), "amd64")

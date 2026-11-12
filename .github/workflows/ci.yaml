@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install tox
         # TODO: Consider replacing with custom image on self-hosted runner OR pinning version
         run: python3 -m pip install tox
@@ -37,7 +37,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Install tox
         # TODO: Consider replacing with custom image on self-hosted runner OR pinning version
         run: python3 -m pip install tox
@@ -46,7 +46,7 @@ jobs:
 
   build:
     name: Build charms
-    uses: canonical/data-platform-workflows/.github/workflows/build_charm.yaml@v32.1.0
+    uses: canonical/data-platform-workflows/.github/workflows/build_charm.yaml@v53
     with:
       cache: false  # TODO: fix after being added to ccc
 
@@ -54,20 +54,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - base: 22.04
-            tox-environment: integration
-          - base: 24.04
-            tox-environment: integration
+        runner:
+          - ubuntu-24.04
+          - ubuntu-24.04-arm
+        base:
+          - 24.04
+          - 22.04
+        exclude:
+          - runner: ubuntu-24.04-arm
+            base: 22.04
     name: Integration tests (${{ matrix.base }})
     needs:
       - lint
       - unit-test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 120
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Setup operator environment
         # TODO: Replace with custom image on self-hosted runner
         uses: charmed-kubernetes/actions-operator@main
@@ -86,6 +90,6 @@ jobs:
             echo "mark_expression=not unstable" >> $GITHUB_OUTPUT
           fi
       - name: Run integration tests
-        run: tox run -e ${{ matrix.tox-environment }} -- -m '${{ steps.select-tests.outputs.mark_expression }}'
+        run: tox run -e integration -- -m '${{ steps.select-tests.outputs.mark_expression }}'
         env:
           CHARM_UBUNTU_BASE: ${{ matrix.base }}

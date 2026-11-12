@@ -41,4 +41,4 @@ async def charm(ubuntu_base, arch):
     if not files:
         raise FileNotFoundError
 
-    return files[0]
+    return f"./{files[0]}"

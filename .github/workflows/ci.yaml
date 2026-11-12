@@ -63,8 +63,9 @@ jobs:
         exclude:
           - runner: ubuntu-24.04-arm
             base: 22.04
-    name: Integration tests (${{ matrix.base }})
+    name: Integration tests - ${{ matrix.arch }} (${{ matrix.base }})
     needs:
+      - build
       - lint
       - unit-test
     runs-on: ${{ matrix.runner }}

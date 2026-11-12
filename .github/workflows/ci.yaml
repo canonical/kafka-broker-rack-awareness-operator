@@ -63,7 +63,7 @@ jobs:
         exclude:
           - runner: ubuntu-24.04-arm
             base: 22.04
-    name: Integration tests - ${{ matrix.arch }} (${{ matrix.base }})
+    name: Integration tests - ${{ matrix.runner }} (${{ matrix.base }})
     needs:
       - build
       - lint
@@ -90,6 +90,11 @@ jobs:
             echo Skipping unstable tests
             echo "mark_expression=not unstable" >> $GITHUB_OUTPUT
           fi
+      - name: Download packed charm(s)
+        uses: actions/download-artifact@v8
+        with:
+          pattern: ${{ needs.build.outputs.artifact-prefix }}-*
+          merge-multiple: true
       - name: Run integration tests
         run: tox run -e integration -- -m '${{ steps.select-tests.outputs.mark_expression }}'
         env:

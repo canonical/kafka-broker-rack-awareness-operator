@@ -1,9 +1,10 @@
 # Copyright 2025 Canonical Ltd.
 # See LICENSE file for licensing details.
+import glob
 import os
+import platform
 
 import pytest
-from pytest_operator.plugin import OpsTest
 
 
 @pytest.fixture(scope="module")
@@ -24,10 +25,20 @@ def series(ubuntu_base):
 
 
 @pytest.fixture(scope="module")
-async def charm(ops_test: OpsTest, ubuntu_base):
+def arch() -> str:
+    """Fixture to provide the platform architecture for testing."""
+    platforms = {
+        "x86_64": "amd64",
+        "aarch64": "arm64",
+    }
+    return platforms.get(platform.machine(), "amd64")
+
+
+@pytest.fixture(scope="module")
+async def charm(ubuntu_base, arch):
     """Kafka charm used for integration testing."""
-    charm_paths = await ops_test.build_charm(".", return_all=True)
-    for p in charm_paths:
-        if ubuntu_base in str(p):
-            return p
-    raise FileNotFoundError
+    files = glob.glob(f"*{ubuntu_base}-{arch}.charm")
+    if not files:
+        raise FileNotFoundError
+
+    return f"./{files[0]}"

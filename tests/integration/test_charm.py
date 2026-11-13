@@ -16,11 +16,12 @@ APP_NAME = METADATA["name"]
 
 
 @pytest.mark.abort_on_fail
-async def test_build_and_deploy(ops_test: OpsTest, series, charm):
+async def test_build_and_deploy(ops_test: OpsTest, series, charm, arch):
     """Build the charm-under-test and deploy it together with related charms.
 
     Assert on the unit status before any relations/configurations take place.
     """
+    await ops_test.run("juju", "set-model-constraints", f"arch={arch}")
     # Deploy the charm and wait for active/idle status
     if series == "jammy":
         kafka_channel = "3/edge"

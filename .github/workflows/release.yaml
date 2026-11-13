@@ -16,7 +16,7 @@ jobs:
     name: Release to Charmhub
     needs:
       - ci-tests
-    uses: canonical/data-platform-workflows/.github/workflows/release_charm.yaml@v53
+    uses: canonical/data-platform-workflows/.github/workflows/release_charm_edge.yaml@v56
     with:
       track: latest
       artifact-prefix: ${{ needs.ci-tests.outputs.artifact-prefix }}
